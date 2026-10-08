@@ -476,6 +476,7 @@ body {
 
 .bar-track {
   flex: 1;
+  min-width: 2rem;
   background: var(--well);
   border-radius: 5px;
   height: 26px;
@@ -487,13 +488,14 @@ body {
   height: 100%;
   border-radius: 5px 0 0 5px;
   transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 8px;
-  color: var(--on-accent);
-  font-size: 0.72rem;
-  font-weight: 700;
+}
+
+.bar-value {
+  flex: 0 0 5.5rem;
+  color: var(--text);
+  text-align: right;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
@@ -906,6 +908,7 @@ body {
   padding: 0.9rem;
   cursor: pointer;
   text-align: center;
+  color: #fff;
   transition: border-color 0.12s ease, background 0.12s ease;
 }
 
@@ -917,6 +920,93 @@ body {
 .filter-card.active {
   border-color: var(--enhanced);
   box-shadow: var(--ring-enhanced);
+}
+
+.filter-performance-explorer {
+  margin-top: 1.4rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.filter-performance-result {
+  margin-top: 1rem;
+}
+
+.filter-performance-progress,
+.filter-performance-caption {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.filter-performance-chart-scroll {
+  overflow-x: auto;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem;
+}
+
+.filter-performance-charts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 0.8rem;
+}
+
+.filter-performance-chart-card {
+  min-width: 0;
+}
+
+.filter-performance-chart-card h4 {
+  margin-top: 0;
+}
+
+.filter-performance-chart-scroll svg {
+  display: block;
+  width: 100%;
+  min-width: 660px;
+}
+
+.chart-axis-label {
+  fill: var(--text);
+  font-size: 13px;
+}
+
+.chart-tick-label {
+  fill: var(--muted);
+  font-size: 11px;
+}
+
+.chart-grid-line {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.chart-grid-vertical {
+  stroke-dasharray: 2 5;
+  opacity: 0.55;
+}
+
+.filter-performance-legend,
+.filter-performance-line-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  padding: 0.6rem 0.2rem 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.filter-performance-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.filter-performance-legend i {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
 }
 
 .pixel-grid {
@@ -988,6 +1078,9 @@ pre.diagram {
   .card-row.cols-3, .card-row.cols-4, .card-row.cols-5 {
     grid-template-columns: repeat(2, 1fr);
   }
+  .filter-performance-charts {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 560px) {
@@ -1002,6 +1095,17 @@ pre.diagram {
   }
   table {
     font-size: 0.85rem;
+  }
+  .bar-row {
+    gap: 0.4rem;
+  }
+  .bar-label {
+    width: 5.5rem;
+    font-size: 0.75rem;
+  }
+  .bar-value {
+    flex-basis: 4.5rem;
+    font-size: 0.72rem;
   }
 }
 

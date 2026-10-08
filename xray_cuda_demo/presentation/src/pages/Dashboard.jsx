@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { checkApiStatus, fetchDatasetInfo, fetchSystemInfo } from "../data/apiClient.js";
+import { checkApiStatus, fetchDatasetInfo } from "../data/apiClient.js";
 import { MetricCard } from "../components/MetricCard.jsx";
 import { ProvenanceBadge } from "../components/ProvenanceBadge.jsx";
 import { isMissing } from "../utils/isMissing.js";
 import { Why } from "../components/Why.jsx";
 
 function StatusBanner({ status, running, error, hasResult }) {
-  let text = "System Ready";
+  let text = "App Ready";
   let color = "var(--pass)";
   if (!status.checked) { text = "Checking…"; color = "var(--muted)"; }
   else if (!status.available) { text = "Backend Unavailable"; color = "var(--error)"; }
@@ -25,12 +25,10 @@ function StatusBanner({ status, running, error, hasResult }) {
 export function Dashboard({ live, onNavigate }) {
   const [status, setStatus] = useState({ checked: false, available: false });
   const [datasetInfo, setDatasetInfo] = useState(null);
-  const [systemInfo, setSystemInfo] = useState(null);
 
   useEffect(() => {
     checkApiStatus().then((s) => setStatus({ checked: true, ...s }));
     fetchDatasetInfo().then(setDatasetInfo);
-    fetchSystemInfo().then(setSystemInfo).catch(() => setSystemInfo(null));
   }, []);
 
   const { result, running, error, selection, filterConfig } = live;
@@ -50,10 +48,8 @@ export function Dashboard({ live, onNavigate }) {
         own measured H2D/compute/D2H breakdown for exactly where the time actually goes on a given run.
       </Why>
 
-      <div className="card-row cols-3" style={{ marginTop: "1.2rem" }}>
+      <div className="card-row cols-1" style={{ marginTop: "1.2rem" }}>
         <MetricCard title="Dataset" value={datasetInfo ? datasetInfo.total_files.toLocaleString("en-US") : null} subtitle="images available" />
-        <MetricCard title="GPU" value={systemInfo?.fingerprint?.gpu_name ?? (status.checked && !status.available ? null : "…")} />
-        <MetricCard title="Backend" value={systemInfo?.gpu_implementation_facts?.native_extension ? "Native C++/CUDA" : "CPU only"} />
       </div>
 
       <div className="card-row cols-3">

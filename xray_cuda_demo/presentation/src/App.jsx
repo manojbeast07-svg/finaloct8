@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import { useLiveRun } from "./hooks/useLiveRun.js";
 import { useHistoricalData } from "./hooks/useHistoricalData.js";
-import { ModeProvider } from "./hooks/useModeContext.jsx";
 import { useKeyboardNav } from "./hooks/useKeyboardNav.js";
 import { Sidebar } from "./components/Sidebar.jsx";
 
@@ -9,7 +8,6 @@ import { Dashboard } from "./pages/Dashboard.jsx";
 import { LiveProcessing } from "./pages/LiveProcessing.jsx";
 import { Performance } from "./pages/Performance.jsx";
 import { Filters } from "./pages/Filters.jsx";
-import { System } from "./pages/System.jsx";
 import { Research } from "./pages/Research.jsx";
 
 const PAGES = [
@@ -18,7 +16,6 @@ const PAGES = [
   { id: "performance", title: "Performance" },
   { id: "filters", title: "Filters" },
   { id: "research", title: "Research / Decisions" },
-  { id: "system", title: "System" },
 ];
 
 export default function App() {
@@ -55,14 +52,12 @@ export default function App() {
       case "live-processing": return <LiveProcessing live={live} />;
       case "performance": return <Performance historical={historical} />;
       case "filters": return <Filters historical={historical?.per_filter_results} />;
-      case "system": return <System />;
       case "research": return <Research historical={historical} />;
       default: return null;
     }
   }
 
   return (
-    <ModeProvider>
       <div className="app-shell app-shell-scroll" data-focus-mode={focusMode ? "true" : "false"}>
         {!focusMode && (
           <Sidebar
@@ -82,6 +77,5 @@ export default function App() {
           </div>
         </div>
       </div>
-    </ModeProvider>
   );
 }

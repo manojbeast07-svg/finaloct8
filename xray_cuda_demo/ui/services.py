@@ -706,8 +706,9 @@ _PER_FILTER_STAGES = ["gaussian", "median", "sobel", "laplacian", "threshold"]
 
 def run_live_per_filter_comparison(
     images: List[np.ndarray], config: FilterConfig, warmup_runs: int = 1, measurement_runs: int = 3,
+    include_cpu: bool = False,
 ) -> List[dict]:
-    """Live, per-filter Basic-vs-Enhanced kernel-time comparison (Presentation
+    """Live, per-filter CPU/Basic/Enhanced kernel-time comparison (Presentation
     Mode's "Enhanced CUDA" slide). Reuses run_gpu_batch()'s own per-stage
     timing breakdown (PipelineTiming's *_ms fields, already exposed via
     ImplementationResult.per_stage_ms) rather than re-measuring filters
@@ -717,20 +718,27 @@ def run_live_per_filter_comparison(
     _require_cuda()
 
     for _ in range(warmup_runs):
+        if include_cpu:
+            run_cpu_batch(images, config)
         run_gpu_batch(images, config, use_enhanced=False)
         run_gpu_batch(images, config, use_enhanced=True)
 
+    cpu_samples: Dict[str, List[float]] = {s: [] for s in _PER_FILTER_STAGES}
     basic_samples: Dict[str, List[float]] = {s: [] for s in _PER_FILTER_STAGES}
     enhanced_samples: Dict[str, List[float]] = {s: [] for s in _PER_FILTER_STAGES}
     for _ in range(measurement_runs):
+        cpu_result = run_cpu_batch(images, config) if include_cpu else None
         basic_result = run_gpu_batch(images, config, use_enhanced=False)
         enhanced_result = run_gpu_batch(images, config, use_enhanced=True)
         for stage in _PER_FILTER_STAGES:
+            if cpu_result is not None and cpu_result.per_stage_ms.get(stage) is not None:
+                cpu_samples[stage].append(cpu_result.per_stage_ms[stage])
             if basic_result.per_stage_ms.get(stage) is not None:
                 basic_samples[stage].append(basic_result.per_stage_ms[stage])
             if enhanced_result.per_stage_ms.get(stage) is not None:
                 enhanced_samples[stage].append(enhanced_result.per_stage_ms[stage])
 
+    cpu_medians = {s: (statistics.median(v) if v else None) for s, v in cpu_samples.items()}
     basic_medians = {s: (statistics.median(v) if v else None) for s, v in basic_samples.items()}
     enhanced_medians = {s: (statistics.median(v) if v else None) for s, v in enhanced_samples.items()}
     total_reduction = sum(
@@ -744,13 +752,13 @@ def run_live_per_filter_comparison(
         b, e = basic_medians[stage], enhanced_medians[stage]
         if b is None or e is None:
             rows.append({
-                "filter": stage, "basic_kernel_ms": None, "enhanced_kernel_ms": None,
+                "filter": stage, "cpu_kernel_ms": cpu_medians[stage], "basic_kernel_ms": None, "enhanced_kernel_ms": None,
                 "kernel_speedup": None, "absolute_reduction_ms": None, "pct_of_total_compute_reduction": None,
             })
             continue
         reduction = b - e
         rows.append({
-            "filter": stage, "basic_kernel_ms": b, "enhanced_kernel_ms": e,
+            "filter": stage, "cpu_kernel_ms": cpu_medians[stage], "basic_kernel_ms": b, "enhanced_kernel_ms": e,
             "kernel_speedup": (b / e) if e > 0 else None,
             "absolute_reduction_ms": reduction,
             "pct_of_total_compute_reduction": (reduction / total_reduction * 100.0) if total_reduction else None,

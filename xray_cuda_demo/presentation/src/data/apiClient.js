@@ -93,11 +93,10 @@ export async function runLive({
   });
 }
 
-export async function runLivePerFilter({ batchSize, seed, filterConfig }) {
-  return postJson("/api/live/per_filter", { batch_size: batchSize, seed, filter_config: filterConfig });
+export async function runLivePerFilter({ batchSize, seed, filterConfig, includeCpu = false }) {
+  return postJson("/api/live/per_filter", { batch_size: batchSize, seed, filter_config: filterConfig, include_cpu: includeCpu });
 }
 
 export async function runLiveBatchSweep({ batchSizes, seed, filterConfig }) {
   return postJson("/api/live/batch_sweep", { batch_sizes: batchSizes, seed, filter_config: filterConfig });
 }
-

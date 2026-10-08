@@ -24,12 +24,11 @@ export function BarChart({ bars, formatValue }) {
                 <div
                   className="bar-fill"
                   style={{ width: `${widthPct}%`, background: COLORS[b.kind] || "var(--muted)" }}
-                >
-                  {formatValue ? formatValue(b.value) : b.value}
-                </div>
+                />
               )}
             </div>
             {missing && <span className="data-unavailable" style={{ marginLeft: "0.5rem" }}>Not available</span>}
+            {!missing && <span className="bar-value">{formatValue ? formatValue(b.value) : b.value}</span>}
           </div>
         );
       })}

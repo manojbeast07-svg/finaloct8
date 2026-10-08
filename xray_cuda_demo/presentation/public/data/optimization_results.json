@@ -20,20 +20,20 @@
   {
     "id": "cuda_graph_basic",
     "name": "CUDA Graphs \u2014 Basic Pipeline",
-    "status": "EXPERIMENTAL",
+    "status": "REJECTED",
     "section": "20D",
     "what_we_tried": "Record the sequence of GPU operations for the Basic pipeline once ('capture'), then replay that recording on future calls instead of re-issuing each step individually, reducing host-side launch overhead.",
     "what_happened": "~1.44x-1.56x faster in the realistic workload test -- a genuine, reproducible win -- but roughly a wash at the largest batch size this project tests, where per-call overhead is already a small fraction of total time.",
-    "why_not_production": "Kept as a tested, working, documented capability -- not yet wired into the default application, since its benefit is batch-size-dependent."
+    "why_not_production": "Rejected for production because the measured benefit was batch-size-dependent and diminished at the largest tested batch size; the additional path is not part of the default application."
   },
   {
     "id": "cuda_graph_enhanced",
     "name": "CUDA Graphs \u2014 Enhanced Pipeline",
-    "status": "EXPERIMENTAL",
+    "status": "REJECTED",
     "section": "20E",
     "what_we_tried": "The same graph-capture idea as above, applied to the Enhanced (optimized) kernels.",
     "what_happened": "~1.89x faster in the realistic workload test -- the single strongest result of the entire optimization research effort.",
-    "why_not_production": "No production-ready API surface has been built for it yet, and the Enhanced kernels required copying (not modifying) code into an isolated file to make capture possible, which is a real maintenance cost to weigh before adoption."
+    "why_not_production": "Rejected for production because the Enhanced kernels required a copied, isolated implementation for graph capture, creating a significant maintenance cost without a production-ready API."
   },
   {
     "id": "async_multistream",

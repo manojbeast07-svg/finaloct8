@@ -600,7 +600,10 @@ def live_per_filter():
         groups = services.group_images_by_shape(images_all)
         dominant_shape = max(groups, key=lambda k: len(groups[k]))
         images = [images_all[i] for i in groups[dominant_shape]]
-        rows = services.run_live_per_filter_comparison(images, config, warmup_runs=1, measurement_runs=3)
+        include_cpu = bool(body.get("include_cpu", False))
+        rows = services.run_live_per_filter_comparison(
+            images, config, warmup_runs=1, measurement_runs=3, include_cpu=include_cpu,
+        )
     except ServiceError as exc:
         return jsonify({"error": str(exc)}), 400
     except Exception as exc:  # pragma: no cover -- surfaced to the UI, never silently swallowed
